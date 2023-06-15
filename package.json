@@ -1,0 +1,24 @@
+{
+  "description": "",
+  "name": "test-webhook",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "tsc & node .",
+    "dev": "tsc -w & nodemon ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@abdulsalamishaq/webhook": "file:../webhook",
+    "body-parser": "^1.20.2",
+    "express": "^4.17.15",
+    "webhook-manager": "file:../webhook"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.15",
+    "typescript": "^5.1.3"
+  }
+}
