@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@abdulsalamishaq/webhook": "file:../webhook",
     "body-parser": "^1.20.2",
     "express": "^4.17.15",
     "webhook-manager": "file:../webhook"
