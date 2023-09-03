@@ -11,7 +11,6 @@ class Flutterwave implements WebhookInterface {
     }
     async process(req: Request, res: Response): Promise<void> {
         //process webhook
-        res.json(req.body);
     }
 }
 

@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@olayanku/webhook-manager": "^1.0.0",
     "body-parser": "^1.20.2",
     "express": "^4.17.15",
     "webhook-manager": "file:../webhook"

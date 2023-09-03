@@ -1,42 +1,77 @@
 import express, { Request, Response } from 'express';
 import bodyParser from 'body-parser';
-import { WebhookManager } from "webhook-manager";
+import { WebhookManager } from "@olayanku/webhook-manager";
 import {Paystack, Flutterwave} from "./drivers/index";
-
-const wManager = WebhookManager.initialize();
-
-wManager.driver('paystack', new Paystack);
-wManager.driver('Fluttaystack', new Flutterwave);
-
-const webhookDrivers = wManager.getDrivers();
-
-
 
 const app = express();
 
 app.use(bodyParser.json());
 
-const start = async (): Promise<void> => {
-    const PORT = process.env.PORT || 3000;
+const wManager = WebhookManager.initialize();
 
-    Object.keys(webhookDrivers).forEach((key) => {
-        const webhook = webhookDrivers[key]; 
+wManager.driver('paystack', new Paystack);
+wManager.driver('flutterwave', new Flutterwave);
 
-        app.post(webhook.path, async (req: Request, res: Response) => {
-            try {
-                if (webhook.validate(res, req)) {
-                    return await webhook.process(req, res);
-                }
-                res.json({
-                    message: "bad request"
-                }).sendStatus(400);
-            } catch (error) {
-                console.error(`Error processing webhook: ${error}`);
-                res.sendStatus(500);
+const webhookDrivers = wManager.getDrivers();
+
+const start = async (): Promise<void> => { 
+    
+    app.get('/webhook/:name', async (req: Request, res: Response) => {
+        const { name } = req.params;
+
+        if (!wManager.exists(name)) {
+            return res.status(400).json({
+                message: name + " is not found as a webhook driver"
+            });
+        }
+        
+        const webhook = webhookDrivers[name];
+        try {
+            if (webhook.validate(res, req)) {
+                await webhook.process(req, res);
+
+                return res.status(200).json({
+                    message: "successful"
+                });
             }
-        });
+            return res.status(400).json({
+                message: "bad request"
+            });
+        } catch (error) {
+            console.error(`Error processing webhook: ${error}`);
+            
+            return res.status(500).json({
+                message: "Internal Server Error"
+            });
+        }
     });
 
+    // wManager.getDriversName().forEach((name) => {
+    //     const webhook = webhookDrivers[name];
+
+    //     app.post('/webhook/' + name, async (req: Request, res: Response) => {
+    //         try {
+    //             if (webhook.validate(res, req)) {
+
+    //                 await webhook.process(req, res);
+
+    //                 return res.status(200).json({
+    //                     message: "successful"
+    //                 });
+    //             }
+    //             return res.status(400).json({
+    //                 message: "bad request"
+    //             });
+    //         } catch (error) {
+    //             console.error(`Error processing webhook: ${error}`);
+    //             return res.status(500).json({
+    //                 message: "Internal Server Error"
+    //             });
+    //         }
+    //     });
+    // });
+
+    const PORT = process.env.PORT || 3000;
 
     app.listen(PORT, () => {
         console.log(`Server started on port ${PORT}`);
