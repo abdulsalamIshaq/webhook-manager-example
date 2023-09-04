@@ -16,7 +16,7 @@ const webhookDrivers = wManager.getDrivers();
 
 const start = async (): Promise<void> => { 
     
-    app.get('/webhook/:name', async (req: Request, res: Response) => {
+    app.post('/webhook/:name', async (req: Request, res: Response) => {
         const { name } = req.params;
 
         if (!wManager.exists(name)) {
@@ -25,7 +25,7 @@ const start = async (): Promise<void> => {
             });
         }
         
-        const webhook = webhookDrivers[name];
+        const webhook = wManager.driver(name);
         try {
             if (webhook.validate(res, req)) {
                 await webhook.process(req, res);
@@ -46,31 +46,6 @@ const start = async (): Promise<void> => {
         }
     });
 
-    // wManager.getDriversName().forEach((name) => {
-    //     const webhook = webhookDrivers[name];
-
-    //     app.post('/webhook/' + name, async (req: Request, res: Response) => {
-    //         try {
-    //             if (webhook.validate(res, req)) {
-
-    //                 await webhook.process(req, res);
-
-    //                 return res.status(200).json({
-    //                     message: "successful"
-    //                 });
-    //             }
-    //             return res.status(400).json({
-    //                 message: "bad request"
-    //             });
-    //         } catch (error) {
-    //             console.error(`Error processing webhook: ${error}`);
-    //             return res.status(500).json({
-    //                 message: "Internal Server Error"
-    //             });
-    //         }
-    //     });
-    // });
-
     const PORT = process.env.PORT || 3000;
 
     app.listen(PORT, () => {
@@ -80,32 +55,4 @@ const start = async (): Promise<void> => {
 };
 
 void start();
-
-// interface Webhook {
-//     path: string;
-//     handler: (payload: any) => Promise<void>;
-// }
-
-// class WebhookLibrary {
-//     private app: express.Application;
-//     private webhooks: Webhook[];
-
-//     constructor() {
-//         this.app = express();
-//         this.app.use(bodyParser.json());
-//         this.webhooks = [];
-//     }
-
-//     public addWebhook(path: string, handler: (payload: any) => Promise<void>): void {
-//         this.webhooks.push({ path, handler });
-//     }
-
-//     public start(port: number): void {
-       
-
-//         this.app.listen(port, () => {
-//             console.log(`Webhook server started on port ${port}`);
-//         });
-//     }
-// }
 

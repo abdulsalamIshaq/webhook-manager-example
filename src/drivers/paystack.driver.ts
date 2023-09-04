@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { WebhookInterface } from "webhook-manager";
+import { WebhookInterface } from "@olayanku/webhook-manager";
 
 
 class Paystack implements WebhookInterface {
